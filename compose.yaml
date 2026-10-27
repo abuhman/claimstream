@@ -1,0 +1,25 @@
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: claimstream
+      POSTGRES_USER: claimstream
+      POSTGRES_PASSWORD: local_dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claimstream -d claimstream"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:4.1.0
+    ports:
+      - "9092:9092"
+
+volumes:
+  postgres_data:
