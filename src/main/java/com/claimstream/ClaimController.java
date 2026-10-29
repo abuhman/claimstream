@@ -1,7 +1,5 @@
 package com.claimstream;
 
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,17 +13,17 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/claims")
 public class ClaimController {
 
+    private final ClaimService claimService;
+
+    public ClaimController(ClaimService claimService) {
+        this.claimService = claimService;
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ClaimResponse submitClaim(
             @Valid @RequestBody ClaimRequest request
     ) {
-        String claimId = UUID.randomUUID().toString();
-
-        return new ClaimResponse(
-                claimId,
-                "RECEIVED",
-                "Claim received for policy " + request.policyNumber()
-        );
+        return claimService.submitClaim(request);
     }
 }
