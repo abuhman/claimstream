@@ -17,6 +17,9 @@ class ClaimServiceTest {
     @Mock
     private ClaimRepository claimRepository;
 
+   @Mock
+   private ClaimEventPublisher eventPublisher;
+
     @InjectMocks
     private ClaimService claimService;
 
@@ -40,5 +43,7 @@ class ClaimServiceTest {
         );
 
         verify(claimRepository).save(any(Claim.class));
+        verify(eventPublisher).publish(any(ClaimSubmittedEvent.class));
+
     }
 }

@@ -10,24 +10,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClaimService {
 
     private final ClaimRepository claimRepository;
+    private final ClaimEventPublisher eventPublisher;
 
-    public ClaimService(ClaimRepository claimRepository) {
+    public ClaimService(
+            ClaimRepository claimRepository,
+            ClaimEventPublisher eventPublisher
+    ) {
         this.claimRepository = claimRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
     public ClaimResponse submitClaim(ClaimRequest request) {
         String claimId = UUID.randomUUID().toString();
+        Instant submittedAt = Instant.now();
 
         Claim claim = new Claim(
                 claimId,
                 request.policyNumber(),
                 request.description(),
                 "RECEIVED",
-                Instant.now()
+                submittedAt
         );
 
         Claim savedClaim = claimRepository.save(claim);
+
+        ClaimSubmittedEvent event = new ClaimSubmittedEvent(
+                savedClaim.getClaimId(),
+                savedClaim.getPolicyNumber(),
+                submittedAt
+        );
+
+        eventPublisher.publish(event);
 
         return new ClaimResponse(
                 savedClaim.getClaimId(),
