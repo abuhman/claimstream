@@ -1,5 +1,6 @@
 package com.claimstream.consumer;
 
+import com.claimstream.ClaimSubmittedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,10 @@ public class ClaimSubmittedConsumer {
         topics = "claims.submitted",
         groupId = "claimstream-processor"
     )
-    public void consume(String message) {
-        System.out.println("Received claim event: " + message);
+    public void consume(ClaimSubmittedEvent event) {
+        System.out.println("Received claim event:");
+        System.out.println("Claim ID: " + event.claimId());
+        System.out.println("Policy Number: " + event.policyNumber());
+        System.out.println("Submitted At: " + event.submittedAt());
     }
 }
